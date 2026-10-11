@@ -3,158 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Google Sipariş Menüsü</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Restoran Menü & Sipariş</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased font-sans pb-24">
+<body class="bg-slate-50 font-sans min-h-screen pb-24">
 
-  <!-- Üst Bilgi / Header -->
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 py-3 shadow-sm">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 id="restaurant-name" class="text-lg font-bold text-gray-900">Yükleniyor...</h1>
-        <p class="text-xs text-green-600 font-medium flex items-center gap-1">
-          <span class="w-2 h-2 bg-green-500 rounded-full inline-block"></span> Google Haritalar Sipariş Hattı
-        </p>
-      </div>
-      <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full font-semibold border border-blue-100">
-        Google Doğrulanmış
-      </span>
+  <!-- Üst Bar -->
+  <header class="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex justify-between items-center">
+    <div>
+      <h1 class="font-bold text-slate-900 text-base">Lezzet Durağı</h1>
+      <p class="text-xs text-slate-500">Online Sipariş Sistemi</p>
     </div>
+    <button onclick="toggleCartModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1.5 transition">
+      🛒 Sepetim (<span id="cart-count">0</span>) - <span id="cart-total-badge">0.00 TL</span>
+    </button>
   </header>
 
-  <!-- Menü Listesi -->
-  <main class="max-w-md mx-auto p-4">
-    <div id="menu-container" class="space-y-4">
-      <!-- Ürünler JavaScript ile buraya yüklenecek -->
-      <div class="text-center py-8 text-gray-400 text-sm">Menü yükleniyor...</div>
+  <!-- Ana İçerik: Menü Listesi -->
+  <main class="max-w-xl mx-auto p-4 space-y-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Menü Ürünleri</h2>
+    </div>
+    <div id="menu-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <p class="text-center text-slate-400 text-xs py-10 col-span-2">Menü yükleniyor...</p>
     </div>
   </main>
 
-  <!-- Alt Sepet Barları / Checkout Bar -->
-  <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg hidden z-20">
-    <div class="max-w-md mx-auto flex items-center justify-between gap-4">
-      <div>
-        <p class="text-xs text-gray-500">Toplam Tutar</p>
-        <p id="cart-total" class="text-lg font-extrabold text-gray-900">0.00 TL</p>
-      </div>
-      <button onclick="openCheckoutModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition flex-1 text-center">
-        Siparişi Tamamla (<span id="cart-count">0</span>)
-      </button>
-    </div>
-  </div>
-
-  <!-- Müşteri Bilgi & Onay Modalı -->
-  <div id="checkout-modal" class="fixed inset-0 bg-black/60 z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+  <!-- Sepet & Sipariş Onay Modal (Gizli / Açılır) -->
+  <div id="cart-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
+      
       <div class="flex justify-between items-center border-b pb-3">
-        <h2 class="text-lg font-bold text-gray-900">Sipariş & Teslimat Bilgileri</h2>
-        <button onclick="closeCheckoutModal()" class="text-gray-400 text-xl font-bold">&times;</button>
+        <h3 class="font-extrabold text-slate-900 text-base">Sepetiniz ve Sipariş Bilgileri</h3>
+        <button onclick="toggleCartModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
       </div>
 
-      <form id="order-form" onsubmit="submitOrder(event)" class="space-y-3">
+      <!-- Sepetteki Ürünler Listesi -->
+      <div id="modal-cart-items" class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+        <!-- Dinamik dolacak -->
+      </div>
+
+      <div class="border-t pt-3 flex justify-between items-center font-extrabold text-slate-900 text-sm">
+        <span>Toplam Tutar:</span>
+        <span id="modal-total" class="text-amber-600 text-base">0.00 TL</span>
+      </div>
+
+      <!-- Müşteri Bilgileri ve Not Formu -->
+      <form onsubmit="createOrder(event)" class="space-y-3 pt-2 border-t">
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Ad Soyad</label>
-          <input type="text" id="cust-name" required placeholder="Ahmet Yılmaz" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+          <label class="text-[11px] font-bold text-slate-600">Ad Soyad</label>
+          <input type="text" id="cust-name" placeholder="Örn: Ahmet Yılmaz" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-amber-500" required>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Telefon Numarası</label>
-          <input type="tel" id="cust-phone" required placeholder="0532XXXXXXX" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+          <label class="text-[11px] font-bold text-slate-600">Telefon</label>
+          <input type="tel" id="cust-phone" placeholder="0532..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-amber-500" required>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Teslimat Adresi / Masa No</label>
-          <textarea id="cust-address" required rows="2" placeholder="Sokak, Bina No, Daire veya Masa No" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-none"></textarea>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-[11px] font-bold text-slate-600">Teslimat Adresi</label>
+            <button type="button" onclick="autoDetectLocation()" class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+              📍 Konumumu Al
+            </button>
+          </div>
+          <textarea id="cust-address" rows="2" placeholder="Adres veya konum tarifi..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-amber-500" required></textarea>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Sipariş Notu (Opsiyonel)</label>
-          <input type="text" id="cust-note" placeholder="Örn: Zil çalmayın, acısız olsun" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+          <label class="text-[11px] font-bold text-slate-600">Sipariş Notu (Opsiyonel)</label>
+          <input type="text" id="cust-note" placeholder="Örn: Zil çalmasın, bebek uyuyor." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
         </div>
 
-        <div class="pt-2 border-t mt-4">
-          <button type="submit" id="submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
-            Siparişi Gönder (Kapıda Ödeme)
-          </button>
-        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-3.5 rounded-xl shadow transition text-xs mt-3">
+          Siparişi Tamamla ve Canlı Takibe Geç 🚀
+        </button>
       </form>
+
     </div>
   </div>
 
-  <!-- JavaScript Mantığı -->
   <script>
-    // SUPABASE BAGLANTI BILGILERI (Kendi Supabase paneli bilgilerinizle değiştirin)
     const SUPABASE_URL = "https://cctskakrpyxygxkujefu.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjdHNrYWtycHl4eWd4a3VqZWZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzQyNTQsImV4cCI6MjEwNjk1MDI1NH0.YkBuSrkPq6ts7UTx5F6DdAdh-ZGMk0rQenDgYzuDyPo";
-
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Test Restoran Slug'ı (Veritabanındaki slug ile aynı olmalı)
-    const RESTAURANT_SLUG = "ornek-pide";
-
-    let currentRestaurant = null;
+    let defaultRestaurantId = null;
     let cart = [];
 
-    // Sayfa Yüklendiğinde Verileri Çek
     window.addEventListener("DOMContentLoaded", async () => {
-      await loadRestaurantData();
+      const { data: restData } = await supabaseClient.from("restaurants").select("id").limit(1);
+      if (restData && restData.length > 0) {
+        defaultRestaurantId = restData[0].id;
+        loadMenu(defaultRestaurantId);
+      }
     });
 
-    async function loadRestaurantData() {
-      // 1. Restoran Bilgisini Çek
-      const { data: restaurant, error: rErr } = await supabaseClient
-        .from("restaurants")
+    async function loadMenu(restaurantId) {
+      const { data: menuItems, error } = await supabaseClient
+        .from("menu_items")
         .select("*")
-        .eq("slug", RESTAURANT_SLUG)
-        .single();
+        .eq("restaurant_id", restaurantId);
 
-      if (rErr || !restaurant) {
-        document.getElementById("restaurant-name").innerText = "Restoran Bulunamadı";
+      const container = document.getElementById("menu-list");
+      container.innerHTML = "";
+
+      if (error || !menuItems || menuItems.length === 0) {
+        container.innerHTML = '<p class="text-center text-slate-400 text-xs py-10 col-span-2">Menüde ürün bulunamadı.</p>';
         return;
       }
 
-      currentRestaurant = restaurant;
-      document.getElementById("restaurant-name").innerText = restaurant.name;
-
-      // 2. Menü Ürünlerini Çek
-      const { data: items, error: mErr } = await supabaseClient
-        .from("menu_items")
-        .select("*")
-        .eq("restaurant_id", restaurant.id)
-        .eq("is_available", true);
-
-      if (mErr) return;
-
-      renderMenu(items);
-    }
-
-    function renderMenu(items) {
-      const container = document.getElementById("menu-container");
-      container.innerHTML = "";
-
-      items.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center";
-        card.innerHTML = `
-          <div class="pr-4">
-            <h3 class="font-bold text-gray-900 text-sm">${item.name}</h3>
-            <p class="text-xs text-gray-500 mt-0.5">${item.description || ''}</p>
-            <p class="text-sm font-extrabold text-green-700 mt-2">${item.price.toFixed(2)} TL</p>
+      menuItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-4 rounded-2xl border border-slate-200 flex justify-between items-center shadow-sm";
+        div.innerHTML = `
+          <div>
+            <h3 class="font-bold text-slate-800 text-xs">${item.name}</h3>
+            <p class="text-slate-500 text-[11px] mt-1 font-semibold">${item.price.toFixed(2)} TL</p>
           </div>
-          <button onclick="addToCart('${item.id}', '${item.name}', ${item.price})" class="bg-green-50 hover:bg-green-100 text-green-700 font-bold px-3.5 py-2 rounded-lg border border-green-200 text-xs transition">
-            + Ekle
+          <button onclick="addToCart('${item.id}', '${item.name}', ${item.price})" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition">
+            + Sepete Ekle
           </button>
         `;
-        container.appendChild(card);
+        container.appendChild(div);
       });
     }
 
     function addToCart(id, name, price) {
-      const existing = cart.find(c => c.id === id);
+      const existing = cart.find(i => i.id === id);
       if (existing) {
         existing.qty += 1;
       } else {
@@ -164,68 +141,113 @@
     }
 
     function updateCartUI() {
-      const cartBar = document.getElementById("cart-bar");
+      const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
+      const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      
+      document.getElementById("cart-count").innerText = totalCount;
+      document.getElementById("cart-total-badge").innerText = totalPrice.toFixed(2) + " TL";
+      document.getElementById("modal-total").innerText = totalPrice.toFixed(2) + " TL";
+
+      const modalItemsContainer = document.getElementById("modal-cart-items");
+      modalItemsContainer.innerHTML = "";
+
       if (cart.length === 0) {
-        cartBar.classList.add("hidden");
+        modalItemsContainer.innerHTML = '<p class="text-center text-slate-400 text-xs py-4">Sepetiniz boş.</p>';
         return;
       }
 
-      cartBar.classList.remove("hidden");
-      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-      document.getElementById("cart-count").innerText = totalCount;
-      document.getElementById("cart-total").innerText = totalPrice.toFixed(2) + " TL";
+      cart.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "flex justify-between items-center bg-slate-50 p-2.5 rounded-xl text-xs";
+        row.innerHTML = `
+          <div>
+            <span class="font-bold text-slate-800">${item.name}</span>
+            <span class="text-slate-500 ml-1">(${item.qty} adet)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-slate-700">${(item.price * item.qty).toFixed(2)} TL</span>
+            <button onclick="removeFromCart('${item.id}')" class="text-red-500 font-bold px-1.5 py-0.5 rounded hover:bg-red-50">Sil</button>
+          </div>
+        `;
+        modalItemsContainer.appendChild(row);
+      });
     }
 
-    function openCheckoutModal() {
-      document.getElementById("checkout-modal").classList.remove("hidden");
+    function removeFromCart(id) {
+      cart = cart.filter(i => i.id !== id);
+      updateCartUI();
     }
 
-    function closeCheckoutModal() {
-      document.getElementById("checkout-modal").classList.add("hidden");
+    function toggleCartModal() {
+      if (cart.length === 0) {
+        alert("Sepetiniz boş! Lütfen önce ürün ekleyin.");
+        return;
+      }
+      const modal = document.getElementById("cart-modal");
+      modal.classList.toggle("hidden");
     }
 
-    async function submitOrder(e) {
-      e.preventDefault();
-      const btn = document.getElementById("submit-btn");
-      btn.disabled = true;
-      btn.innerText = "Sipariş İletiliyor...";
+    async function autoDetectLocation() {
+      if (!navigator.geolocation) return alert("Konum desteklenmiyor.");
+      const btn = event.target;
+      btn.innerText = "Alınıyor...";
 
-      const customerName = document.getElementById("cust-name").value;
-      const customerPhone = document.getElementById("cust-phone").value;
-      const customerAddress = document.getElementById("cust-address").value;
-      const customerNote = document.getElementById("cust-note").value;
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+            headers: { 'Accept-Language': 'tr' }
+          });
+          const data = await res.json();
+          document.getElementById("cust-address").value = data.display_name || `Enlem: ${lat}, Boylam: ${lng}`;
+          btn.innerText = "✓ Eklendi";
+        } catch {
+          document.getElementById("cust-address").value = `Konum: ${lat}, ${lng}`;
+          btn.innerText = "✓ Alındı";
+        }
+      }, () => {
+        alert("Konum alınamadı.");
+        btn.innerText = "📍 Konumumu Al";
+      }, { enableHighAccuracy: true });
+    }
 
-      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    async function createOrder(event) {
+      event.preventDefault();
 
-      const orderPayload = {
-        restaurant_id: currentRestaurant.id,
-        order_source: 'google_maps',
-        table_number: customerAddress,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        customer_note: customerNote,
-        items: cart,
-        total_amount: totalPrice,
-        status: 'pending'
-      };
+      if (cart.length === 0) {
+        alert("Sepetiniz boş.");
+        return;
+      }
+
+      const name = document.getElementById("cust-name-val") || document.getElementById("cust-name").value;
+      const phone = document.getElementById("cust-phone").value;
+      const address = document.getElementById("cust-address").value;
+      const note = document.getElementById("cust-note").value;
+      const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       const { data, error } = await supabaseClient
         .from("orders")
-        .insert([orderPayload]);
+        .insert([
+          {
+            restaurant_id: defaultRestaurantId,
+            customer_name: document.getElementById("cust-name").value,
+            customer_phone: phone,
+            table_number: address,
+            notes: note, // Sipariş notu alanı
+            total_amount: totalAmount,
+            items: cart,
+            status: 'preparing'
+          }
+        ])
+        .select();
 
       if (error) {
-        alert("Sipariş iletilirken bir hata oluştu: " + error.message);
-        btn.disabled = false;
-        btn.innerText = "Siparişi Gönder (Kapıda Ödeme)";
-      } else {
-        alert("Siparişiniz başarıyla alındı! Restoran en kısa sürede hazırlayacaktır.");
-        cart = [];
-        updateCartUI();
-        closeCheckoutModal();
-        btn.disabled = false;
-        btn.innerText = "Siparişi Gönder (Kapıda Ödeme)";
+        alert("Sipariş oluşturulamadı: " + error.message);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        window.location.href = `takip.html?id=${data[0].id}`;
       }
     }
   </script>
