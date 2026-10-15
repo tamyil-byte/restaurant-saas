@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelibolu Lezzet Durağı - Google Haritalar</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Iconlar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f8f9fa; }
+        .google-blue { color: #1a73e8; }
+        .bg-google-blue { background-color: #1a73e8; }
+        .bg-google-blue:hover { background-color: #1557b0; }
+    </style>
+</head>
+<body class="flex justify-center items-start min-h-screen sm:py-6">
+
+    <!-- Mobil Cihaz Ekran Simülatörü -->
+    <div class="w-full max-w-md bg-white min-h-screen sm:min-h-0 sm:rounded-2xl sm:shadow-2xl overflow-hidden border border-gray-200">
+        
+        <!-- Google Arama Üst Barı -->
+        <div class="p-3 bg-white border-b border-gray-200 flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+            <i class="fa-solid fa-arrow-left text-gray-600 text-lg cursor-pointer"></i>
+            <div class="flex-1 bg-gray-100 rounded-full py-2 px-4 flex items-center gap-2 text-sm text-gray-700">
+                <span class="font-semibold text-blue-600">G</span>
+                <span class="truncate">Gelibolu Lezzet Durağı - Google'da Ara</span>
+            </div>
+            <i class="fa-solid fa-ellipsis-vertical text-gray-600 text-lg"></i>
+        </div>
+
+        <!-- İşletme Görseli -->
+        <div class="relative h-48 bg-gray-300">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80" 
+                 alt="Restoran Görseli" class="w-full h-full object-cover">
+            <div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                <i class="fa-solid fa-camera"></i> 24 Fotoğraf
+            </div>
+        </div>
+
+        <!-- İşletme Detay Kartı -->
+        <div class="p-4">
+            <h1 class="text-2xl font-bold text-gray-900">Gelibolu Lezzet Durağı</h1>
+            
+            <!-- Yıldız & Değerlendirme -->
+            <div class="flex items-center gap-2 mt-1 text-sm">
+                <span class="font-bold text-gray-800">4.8</span>
+                <div class="flex text-amber-400 text-xs">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <span class="text-gray-500">(142)</span>
+                <span class="text-gray-400">•</span>
+                <span class="text-gray-600">Restoran</span>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-1">Yazılıvatan Cd. No:12, Gelibolu/Çanakkale</p>
+            <p class="text-xs text-green-600 font-semibold mt-0.5">Açık • Kapanış saati: 23:00</p>
+
+            <!-- HIZLI EYLEM BUTONLARI -->
+            <div class="grid grid-cols-4 gap-2 my-4 pt-2 border-t border-gray-100 text-center">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-google-blue">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Ara</span>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-google-blue">
+                        <i class="fa-solid fa-location-arrow"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Yol Tarifi</span>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-google-blue">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Paylaş</span>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-google-blue">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Kaydet</span>
+                </div>
+            </div>
+
+            <!-- CANLI DEMO - SİPARİŞ VER BUTONU (EN KRİTİK ALAN) -->
+            <div class="my-3 p-3 bg-blue-50 rounded-xl border border-blue-100 text-center">
+                <p class="text-xs text-blue-800 font-medium mb-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i> Doğrudan Komisyonsuz Sipariş Hattı
+                </p>
+                <a href="index.html" 
+                   class="block w-full bg-google-blue text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-base">
+                    <i class="fa-solid fa-utensils"></i>
+                    SİPARİŞ VER (ORDER ONLINE)
+                </a>
+            </div>
+
+            <!-- Google Haritalar Sekmeleri -->
+            <div class="flex border-b border-gray-200 mt-4 text-sm font-medium text-gray-500">
+                <div class="pb-2 px-3 border-b-2 border-google-blue text-google-blue font-bold">Genel Bakış</div>
+                <div class="pb-2 px-3">Menü</div>
+                <div class="pb-2 px-3">Değerlendirmeler</div>
+                <div class="pb-2 px-3">Hakkında</div>
+            </div>
+
+            <!-- Müşteri Yorumları Simülasyonu -->
+            <div class="mt-4 space-y-3">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Popüler Yorumlar</h3>
+                <div class="bg-gray-50 p-3 rounded-lg text-xs text-gray-600">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">A</div>
+                        <span class="font-bold text-gray-800">Ahmet Y.</span>
+                    </div>
+                    "Harita üzerinden Sipariş Ver butonuna basıp sipariş verdim, 20 dakikada sıcak geldi. Mutfak ve kurye takibi harika!"
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
